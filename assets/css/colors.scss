@@ -1,0 +1,62 @@
+:root {
+  --primary: #181d33;
+  --secondary: #ffc700;
+  --purple: #936dfe;
+  --white: #ffffff;
+  --light-gray: #e0e0e0;
+  --light-blue: #24a1de;
+  --Surface100: F0F1F3;
+  --Surface800: #232b53;
+  --Surface900: #080a12;
+}
+//////////////////
+
+.primary-bg {
+  background-color: var(--primary);
+}
+.primary-text {
+  color: var(--primary);
+}
+.secondary-bg {
+  background-color: var(--secondary);
+}
+.secondary-text {
+  color: var(--secondary);
+}
+.white-bg {
+  background-color: var(--white);
+}
+.white-text {
+  color: var(--white);
+}
+.purple-bg {
+  background-color: var(--purple);
+}
+.purple-text {
+  color: var(--purple);
+}
+.Surface100-bg {
+  background-color: var(--Surface100);
+}
+.Surface100-text {
+  color: var(--Surface100);
+}
+
+.Surface800-bg {
+  background-color: var(--Surface800) !important;
+}
+.Surface800-text {
+  color: var(--Surface800);
+}
+.Surface900-bg {
+  background-color: var(--Surface900);
+}
+.Surface900-text {
+  color: var(--Surface900);
+}
+.light-blue-bg {
+  background-color: var(--light-blue) !important;
+}
+.light-blue-text {
+  color: var(--light-blue);
+}
