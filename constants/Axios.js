@@ -15,9 +15,7 @@ farafundAxios.interceptors.request.use(
     } else if (!storageToken && config?.headers?.Authorization) {
       config.headers.Authorization = "";
     }
-    if (config.url.includes("file/")) {
-      config.responseType = "blob";
-    }
+
     return config;
   },
   function (error) {

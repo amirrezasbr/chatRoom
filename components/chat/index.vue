@@ -27,15 +27,9 @@
         >
           <chat-image :content="item.content" :chatId="chatId" />
         </div>
-
-        <!-- <audio
-          v-else-if="item.contentType == 'audio'"
-          class="white--text border pr-2"
-          :class="
-            receiverUsername === item.senderUsername ? 'light-blue-bg' : 'green'
-          "
-          :src="item.content"
-        /> -->
+        <div v-else-if="item.contentType == 'audio'">
+          <chat-audio :content="item.content" :chatId="chatId" />
+        </div>
       </div>
     </v-col>
     <v-col cols="9" class="position mt-10 px-0 py-0" v-if="type == 'text'">
@@ -46,6 +40,8 @@
             small-chips
             background-color="Surface100-bg"
             solo
+            v-model="file"
+            @click:append="sendFile"
             multiple
             placeholder="عکس را اینجا آپلود کنید"
             elevation="0"
@@ -95,18 +91,19 @@ export default {
   data() {
     return {
       message: "",
+      file: null,
       messages: [],
       isTyping: false,
       isTypingId: "",
       type: "text",
       showChat: false,
+      isRecording: false,
       dialog: false,
       rules,
       sendAudio: false,
-      audioURL: null,
-      audioBlob: null,
-      mediaRecorder: null,
-      chunks: [],
+      audioFile: null,
+      audioRecorder: undefined,
+      audioChunks: [],
     };
   },
   mounted() {
@@ -131,7 +128,24 @@ export default {
       }
     },
     sendFile() {
-      this.type = this.type == "image" ? "text" : "image";
+      const data = new FormData();
+      data.append("chatId", this.chatId);
+      data.append("file", this.file[0]);
+
+      services.file
+        .upload(data)
+        .then((response) => {
+          const message = {
+            chatId: this.chatId,
+            content: response.data.filename,
+            contentType: "image",
+          };
+          socket.emit("message", message);
+          this.file = null;
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
     },
     checkSendingStatus() {
       socket.emit("is typing", this.chatId);
@@ -166,75 +180,77 @@ export default {
           this.$toast.error(error.response.data.error);
         });
     },
-    async sendAudioMessage() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        this.mediaRecorder = new MediaRecorder(stream);
-
-        this.mediaRecorder.ondataavailable = (event) => {
-          this.chunks.push(event.data);
-        };
-
-        this.mediaRecorder.onstop = () => {
-          this.audioBlob = new Blob(this.chunks, { type: "audio/wav" });
-          this.audioURL = URL.createObjectURL(this.audioBlob);
-          this.chunks = [];
-        };
-
-        this.mediaRecorder.start();
-        this.sendAudio = true;
-        console.log(
-          `you got an audio: ${this.mediaRecorder} `,
-          this.audioURL,
-          this.audioBlob,
-          this.chunks
-        );
-
-        console.log("Recording started");
-      } catch (error) {
-        console.error("Error accessing the microphone:", error);
+    recordAudioMessage() {
+      this.isRecording = !this.isRecording;
+      if (this.isRecording) {
+        // start recording
+        navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .then((stream) => {
+            const options = {
+              mimeType: "audio/webm",
+              audioBitsPerSecond: 8000,
+            };
+            this.audioRecorder = new MediaRecorder(stream, options);
+            this.audioRecorder.addEventListener("dataavailable", (event) => {
+              this.audioChunks.push(event.data);
+            });
+            this.audioRecorder.start();
+          })
+          .catch((error) => {
+            console.log("error", error);
+          });
+      } else {
+        if (this.audioRecorder && this.audioRecorder.state !== "inactive") {
+          // stop recording
+          this.audioRecorder.addEventListener("stop", () => {
+            this.audioRecorder.stream.getTracks().forEach((track) => {
+              track.stop();
+              const audioBlob = new Blob(this.audioChunks, {
+                type: "audio/webm",
+              });
+              this.audioFile = new File([audioBlob], "audio.webm", {
+                type: "audio/webm",
+              });
+              // emiting data
+              const data = new FormData();
+              data.append("chatId", this.chatId);
+              data.append("file", this.audioFile);
+              console.log("file", this.audioFile);
+              services.file
+                .upload(data)
+                .then((response) => {
+                  const message = {
+                    chatId: this.chatId,
+                    content: response.data.filename,
+                    contentType: "audio",
+                  };
+                  socket.emit("message", message);
+                  this.file = null;
+                })
+                .catch((error) => {
+                  console.log("error", error);
+                });
+              this.audioChunks = [];
+            });
+          });
+          this.audioRecorder.stop();
+        }
       }
-      // navigator.mediaDevices
-      //   .getUserMedia({ video: false, audio: true })
-      //   .then((stream) => {
-      //     console.log(`you got an audio: ${stream}`);
-      //     window.localStream = stream; // A
-      //     window.localAudio.srcObject = stream; // B
-      //     window.localAudio.autoplay = true; // C
-      //   })
-      //   .catch((err) => {
-      //     console.error(`you got an error: ${err}`);
-      //   });
     },
-    stopRecording() {
-      if (this.mediaRecorder) {
-        this.mediaRecorder.stop();
-        console.log("Recording stopped");
-      }
-    },
+
     sendMessage() {
-      // if (this.message == "") {
-      //   this.sendAudioMessage();
-      // } else {
-      // console.log("message1", this.chatId, this.message, socket);
-
-      // if (socket.connected == false) {
-      //   const token = localStorage.getItem("token");
-      //   // connectSocket(token);
-      //   token = JSON.parse(token);
-      //   // console.log("message", this.chatId, this.message, socket, token);
-      //   console.log("message", token);
-      // }
-      let message = {
-        chatId: this.chatId,
-        content: this.message,
-        contentType: "text",
-      };
-      socket.emit("message", message);
-      this.message = "";
-      // }
+      if (this.message == "") {
+        this.recordAudioMessage();
+      } else {
+        let message = {
+          chatId: this.chatId,
+          content: this.message,
+          contentType: "text",
+        };
+        socket.emit("message", message);
+        this.message = "";
+      }
     },
   },
 };

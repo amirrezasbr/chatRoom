@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-img :src="image" height="100%" width="100%"></v-img>
+    <audio controls class="white--text border pr-2" :src="audio" />
   </div>
 </template>
 
@@ -19,19 +19,19 @@ export default {
   },
   data() {
     return {
-      image: null,
+      audio: null,
     };
   },
   mounted() {
-    this.getImage(this.content);
+    this.getAudio(this.content);
   },
   methods: {
-    getImage(id) {
+    getAudio(id) {
       services.file
         .get(id, this.chatId)
         .then((response) => {
-          this.image = URL.createObjectURL(response.data);
-          return this.image;
+          this.audio = URL.createObjectURL(response.data);
+          return this.audio;
         })
         .catch((error) => {
           console.log("errorImage", error);
