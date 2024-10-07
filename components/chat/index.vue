@@ -30,6 +30,9 @@
         <div v-else-if="item.contentType == 'audio'">
           <chat-audio :content="item.content" :chatId="chatId" />
         </div>
+        <div class="d-block" v-else-if="item.contentType == 'file'">
+          <chat-file :content="item.content" :chatId="chatId" />
+        </div>
       </div>
     </v-col>
     <v-col cols="9" class="position mt-10 px-0 py-0" v-if="type == 'text'">
@@ -49,12 +52,15 @@
             show-size
           ></v-file-input>
         </v-col>
+
         <v-col cols="9">
           <v-text-field
             hide-details="auto"
             background-color="Surface100-bg"
             solo
+            @click:prepend="takePicture"
             elevation="0"
+            prepend-icon="mdi-picture-in-picture-bottom-right-outline"
             @click:append="sendMessage"
             placeholder="پیغام را اینجا بنویسید"
             :append-icon="
@@ -76,7 +82,7 @@
 import { connectSocket, socket } from "~/constants/socket";
 import rules from "~/constants/vuetifyRules";
 import services from "~/services";
-
+import { picture } from "~/constants/pictureButton";
 export default {
   props: {
     chatId: {
@@ -101,6 +107,7 @@ export default {
       dialog: false,
       rules,
       sendAudio: false,
+      imageFile: null,
       audioFile: null,
       audioRecorder: undefined,
       audioChunks: [],
@@ -121,6 +128,9 @@ export default {
     },
   },
   methods: {
+    async takePicture() {
+      await picture(this.chatId);
+    },
     checkConnectingStatus() {
       if (socket == undefined) {
         const token = localStorage.getItem("token");
@@ -138,7 +148,7 @@ export default {
           const message = {
             chatId: this.chatId,
             content: response.data.filename,
-            contentType: "image",
+            contentType: "file",
           };
           socket.emit("message", message);
           this.file = null;
