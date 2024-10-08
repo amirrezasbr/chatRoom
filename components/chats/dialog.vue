@@ -27,36 +27,6 @@
                   >
                   </v-text-field>
                 </v-col>
-                <!-- <v-col cols="12">
-                  <div
-                    :class="$vuetify.theme.dark ? 'white--text' : ''"
-                    class="d-flex justify-space-between py-1 title-text-field"
-                  >
-                    <v-row>
-                      <v-col cols="3"> رمز عبور </v-col>
-                      <v-col cols="9" class="d-flex justify-end">
-                        <span class="purple-text">
-                          رمز عبور خود را فراموش کرده‌اید؟
-                        </span>
-                      </v-col>
-                    </v-row>
-                  </div>
-                  <v-text-field
-                    v-model="password"
-                    :background-color="
-                      $vuetify.theme.dark ? 'Surface800-bg' : 'Surface100-bg'
-                    "
-                    hide-details="auto"
-                    outlined
-                    dense
-                    label="رمز عبور خود را وارد کنید"
-                    :type="show_password ? 'text' : 'password'"
-                    @click:append="onAppendClick"
-                    :append-icon="show_password ? 'mdi-eye' : 'mdi-eye-off'"
-                    :rules="[rules.required, rules.length]"
-                  >
-                  </v-text-field>
-                </v-col> -->
                 <v-col cols="12">
                   <v-btn
                     @click="addContact"

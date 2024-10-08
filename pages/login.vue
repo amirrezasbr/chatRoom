@@ -181,21 +181,14 @@ export default {
             axios.defaults.headers.common["Authorization"] =
               response.data.token;
             connectSocket(response.data.token);
-            // console.log("testLogin", socket.connected);
-            // socket.on("connect", () => {
-            //   console.log("test", socket);
-            //   localStorage.setItem("socket", socket);
-            // });
-            console.log("error", response);
-
             localStorage.setItem("token", response.data.token);
             this.$store.commit("setUserToken", response.data);
             this.$router.replace("/chats");
             this.loading = false;
           })
           .catch((error) => {
-            this.$toast.error("error", error);
-            console.log("error", error);
+            this.$toast.error(error?.response?.data?.error);
+            console.log("error", error?.response?.data?.error);
             this.loading = false;
           });
       } else {

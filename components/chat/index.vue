@@ -102,12 +102,9 @@ export default {
       isTyping: false,
       isTypingId: "",
       type: "text",
-      showChat: false,
       isRecording: false,
-      dialog: false,
       rules,
       sendAudio: false,
-      imageFile: null,
       audioFile: null,
       audioRecorder: undefined,
       audioChunks: [],
@@ -175,7 +172,6 @@ export default {
     },
     getMessages() {
       socket.on("message", (message) => {
-        console.log("message", message);
         this.messages.push(message);
       });
     },

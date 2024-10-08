@@ -19,7 +19,7 @@ farafundAxios.interceptors.request.use(
     return config;
   },
   function (error) {
-    console.log("test1", error);
+    console.log("config error", error);
     return Promise.reject(error);
   }
 );
@@ -28,7 +28,7 @@ farafundAxios.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log("test2", error);
+    console.log("response error", error);
     return Promise.reject(error);
   }
 );
