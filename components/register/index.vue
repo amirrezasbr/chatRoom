@@ -270,7 +270,7 @@ export default {
             .catch((error) => {
               this.loading = false;
               console.log("error", error);
-              this.$toast.error(`${error?.response?.data?.message}`);
+              this.$toast.error(error?.message);
             });
         } else {
           this.loading = false;

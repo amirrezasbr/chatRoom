@@ -18,8 +18,7 @@
                     v-model="username"
                     outlined
                     dense
-                    label="نام کاربر
- خود را وارد کنید"
+                    label="نام کاربری که با آن میخواهید secret chat داشته باشید وارد کنید"
                     :rules="[rules.required]"
                     :background-color="
                       $vuetify.theme.dark ? 'Surface800-bg' : 'Surface100-bg'
@@ -73,7 +72,7 @@ export default {
         if (!this.loading) this.loading = true;
         let data = {
           receiverUsername: this.username,
-          isSecret: false,
+          isSecret: true,
         };
         services.chat
           .create(data)
@@ -84,7 +83,7 @@ export default {
             this.dialog = false;
           })
           .catch((error) => {
-            this.$toast.error(`${error?.response?.data?.error}`);
+            this.$toast.error(error?.response?.data?.error);
             console.log("error", error);
             this.loading = false;
             this.dialog = false;

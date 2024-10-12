@@ -1,6 +1,15 @@
 <template>
-  <v-row>
+  <v-row @click="selectChatId">
     <v-col
+      v-if="item.isSecret"
+      :class="selectChatColor ? 'light-blue-bg white--text' : ''"
+      cols="12"
+      class="py-2"
+    >
+      {{ item.receiverUsername }}-secret
+    </v-col>
+    <v-col
+      v-else
       :class="selectChatColor ? 'light-blue-bg white--text' : ''"
       cols="12"
       class="py-2"
@@ -16,9 +25,7 @@
 <script>
 export default {
   data() {
-    return {
-      selectChatColor: false,
-    };
+    return {};
   },
   props: {
     item: {
@@ -27,14 +34,23 @@ export default {
     chatIds: {
       type: Array,
     },
+    selectChatColor: {
+      type: Boolean,
+      default: false,
+    },
   },
-  watch: {
-    chatIds() {
-      if (this.item.chatId == this.chatIds) {
-        this.selectChatColor = true;
-      } else {
-        this.selectChatColor = false;
-      }
+  // watch: {
+  //   chatIds() {
+  //     if (this.item.chatId == this.chatIds) {
+  //       this.selectChatColor = true;
+  //     } else {
+  //       this.selectChatColor = false;
+  //     }
+  //   },
+  // },
+  methods: {
+    selectChatId() {
+      this.$emit("selectChatId", this.item);
     },
   },
 };

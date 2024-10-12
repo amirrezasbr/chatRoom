@@ -2,7 +2,13 @@
   <v-row>
     <!-- todo d-flex flex-column-reverse -->
     <v-col cols="9" class="header-position mb-10 px-0 py-0">
-      <p class="black--text px-5">{{ receiverUsername }}</p>
+      <p v-if="receiverUsername.isSecret" class="black--text px-5">
+        {{ receiverUsername.receiverUsername }}
+        - secret
+      </p>
+      <p v-else class="black--text px-5">
+        {{ receiverUsername }}
+      </p>
       <p v-if="isTypingId == chatId" class="black--text px-5">
         {{ isTyping ? "در حال نوشتن ..." : "" }}
       </p>
@@ -89,16 +95,25 @@ export default {
       type: String,
       required: true,
     },
+    chatsList: {
+      type: Array,
+      required: true,
+    },
     receiverUsername: {
       type: String,
       required: true,
+    },
+    checkMessage: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
   },
   data() {
     return {
       message: "",
-      file: null,
       messages: [],
+      file: null,
       isTyping: false,
       isTypingId: "",
       type: "text",
@@ -120,6 +135,11 @@ export default {
     chatId() {
       this.getChatHistory();
     },
+    checkMessage() {
+      if (this.checkMessage) {
+        this.messages = [];
+      }
+    },
     message() {
       this.checkSendingStatus();
     },
@@ -132,6 +152,10 @@ export default {
       if (socket == undefined) {
         const token = localStorage.getItem("token");
         connectSocket(token);
+        // socket.on("chat list", () => {
+        //   console.log("test1");
+        //   this.$emit("getChatList", this.chatId);
+        // });
       }
     },
     sendFile() {
@@ -172,7 +196,10 @@ export default {
     },
     getMessages() {
       socket.on("message", (message) => {
-        this.messages.push(message);
+        if (message.chatId === this.chatId) {
+          this.messages.push(message);
+        }
+        this.$emit("getChatList");
       });
     },
     getChatHistory() {
