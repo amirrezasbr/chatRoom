@@ -152,10 +152,6 @@ export default {
       if (socket == undefined) {
         const token = localStorage.getItem("token");
         connectSocket(token);
-        // socket.on("chat list", () => {
-        //   console.log("test1");
-        //   this.$emit("getChatList", this.chatId);
-        // });
       }
     },
     sendFile() {

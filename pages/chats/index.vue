@@ -88,15 +88,6 @@ export default {
     selectChatId(item) {
       this.receiverUsername = item.receiverUsername;
       this.chatId = item.chatId;
-      console.log("test", item);
-
-      // console.log("item", item);
-      // if (this.chatIds.length == 0) {
-      //   this.chatIds.push(this.chatId);
-      // } else if (this.chatIds.length != 0) {
-      //   this.chatIds.splice(0, 1);
-      //   this.chatIds.push(this.chatId);
-      // }
     },
     getChatList(id) {
       services.chat
