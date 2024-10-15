@@ -1,13 +1,12 @@
 <template>
   <v-row>
-    <!-- todo d-flex flex-column-reverse -->
     <v-col cols="9" class="header-position mb-10 px-0 py-0">
       <p v-if="receiverUsername.isSecret" class="black--text px-5">
         {{ receiverUsername.receiverUsername }}
         - secret
       </p>
       <p v-else class="black--text px-5">
-        {{ receiverUsername }}
+        {{ receiverUsername.receiverUsername }}
       </p>
       <p v-if="isTypingId == chatId" class="black--text px-5">
         {{ isTyping ? "در حال نوشتن ..." : "" }}
@@ -19,14 +18,18 @@
           v-if="item.contentType == 'text'"
           class="white--text border pr-2"
           :class="
-            receiverUsername === item.senderUsername ? 'light-blue-bg' : 'green'
+            receiverUsername.receiverUsername === item.senderUsername
+              ? 'light-blue-bg'
+              : 'green'
           "
         >
           {{ item.content }}
         </p>
         <div
           :class="
-            receiverUsername === item.senderUsername ? 'light-blue-bg' : 'green'
+            receiverUsername.receiverUsername === item.senderUsername
+              ? 'light-blue-bg'
+              : 'green'
           "
           class="white--text border my-3"
           v-else-if="item.contentType == 'image'"
@@ -100,7 +103,7 @@ export default {
       required: true,
     },
     receiverUsername: {
-      type: String,
+      type: Object,
       required: true,
     },
     checkMessage: {
@@ -158,7 +161,7 @@ export default {
       const data = new FormData();
       data.append("chatId", this.chatId);
       data.append("file", this.file[0]);
-
+      cons;
       services.file
         .upload(data)
         .then((response) => {

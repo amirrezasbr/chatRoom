@@ -39,15 +39,6 @@ export default {
       default: false,
     },
   },
-  // watch: {
-  //   chatIds() {
-  //     if (this.item.chatId == this.chatIds) {
-  //       this.selectChatColor = true;
-  //     } else {
-  //       this.selectChatColor = false;
-  //     }
-  //   },
-  // },
   methods: {
     selectChatId() {
       this.$emit("selectChatId", this.item);

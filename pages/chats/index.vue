@@ -18,7 +18,6 @@
           </v-col>
           <v-col cols="12" class="py-3" @click="showChats">
             <div v-for="(item, index) in chatLists" :key="index">
-              <!-- @click="selectChatId(item)" -->
               <chats-list
                 :item="item"
                 class="cursor-pointer"
@@ -86,7 +85,7 @@ export default {
       this.receiverUsername = response;
     },
     selectChatId(item) {
-      this.receiverUsername = item.receiverUsername;
+      this.receiverUsername = item;
       this.chatId = item.chatId;
     },
     getChatList(id) {
